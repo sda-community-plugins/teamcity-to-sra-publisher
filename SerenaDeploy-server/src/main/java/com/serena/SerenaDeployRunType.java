@@ -55,10 +55,10 @@ public class SerenaDeployRunType extends RunType
             {
                 ArrayList<InvalidProperty> toReturn = new ArrayList<InvalidProperty>();
                 if (!properties.containsKey("sraUrl") || StringUtil.isEmpty(properties.get("sraUrl")))
-                    toReturn.add(new InvalidProperty("sraUrl", "Please enter the Serena RA URL"));
+                    toReturn.add(new InvalidProperty("sraUrl", "Please enter the Serena DA URL"));
 
                 if (!properties.containsKey("username") || StringUtil.isEmpty(properties.get("username")))
-                    toReturn.add(new InvalidProperty("username", "Please enter a username for connecting to Serena RA"));
+                    toReturn.add(new InvalidProperty("username", "Please enter a username for connecting to Serena DA"));
 
                 if (!properties.containsKey("componentName") || StringUtil.isEmpty(properties.get("componentName")))
                     toReturn.add(new InvalidProperty("componentName", "Please enter a component name"));

@@ -5,7 +5,9 @@ import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.jetbrains.annotations.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashSet;
@@ -60,7 +62,8 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         BuildFinishedStatus toReturn = BuildFinishedStatus.FINISHED_FAILED;
 
         logger = myBuild.getBuildLogger();
-        Boolean deployAfterUpload;
+        Boolean deployAfterUpload = false;
+        Boolean addStatusToVersion = false;
         String sraUrl = getParameter("sraUrl");
         String username = getParameter("username");
         String password = getParameter("password");
@@ -71,15 +74,38 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         String includePatterns = getParameter("includePatterns");
         String excludePatterns = getParameter("excludePatterns");
         String deployVersion = getParameter("deployVersion");
-        if (deployVersion == null)
-            deployAfterUpload = false;
-        else
-            deployAfterUpload = true;
+        String deployVersionIf = getParameter("deployVersionIf");
+        // is deployVersionIf override defined
+        if (deployVersionIf == null || deployVersionIf.equals("")) {
+            // no, check deployVersion parameter
+            if (deployVersion == null) {
+                deployAfterUpload = false;
+            } else {
+                deployAfterUpload = true;
+            }
+        } else {
+            // yes, check if it is set to true or yes
+            if (deployVersionIf.equals("false") || deployVersionIf.equals("no")) {
+                deployAfterUpload = false;
+            }
+            if (deployVersionIf.equals("true") || deployVersionIf.equals("yes")) {
+                deployAfterUpload = true;
+            }
+        }
         String deployApplication = getParameter("deployApplication");
         String deployEnvironment = getParameter("deployEnvironment");
         String deployProcess = getParameter("deployProcess");
+        String deployProperties = getParameter("deployProperties");
+        String addStatus = getParameter("addStatus");
+        if (addStatus == null || addStatus.equals(""))
+            addStatusToVersion = false;
+        else
+            addStatusToVersion = true;
+        String statusName = getParameter("statusName");
+        String jsonProperties = "{";
 
-        logger.progressMessage("Serena RA URL: " + sraUrl);
+        // log general settings
+        logger.progressMessage("Serena DA URL: " + sraUrl);
         logger.progressMessage("Username: " + username);
         logger.progressMessage("Component: " + componentName);
         logger.progressMessage("Base Directory: " + baseDir);
@@ -90,11 +116,35 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         if (excludePatterns != null)
             logger.progressMessage("Exclude Patterns: " + excludePatterns);
 
-        logger.progressMessage("Deploy Version: " + (deployAfterUpload ? "selected" : "not selected"));
+        // log deploy settings
+        logger.progressMessage("Deploy Version: " + (deployAfterUpload ? "true" : "false"));
+        logger.progressMessage("Deploy Version if: " +
+                ((deployVersionIf == null || deployVersionIf.equals("")) ? "not set" : deployVersionIf));
         if (deployAfterUpload) {
             logger.progressMessage("Deploy Application: " + deployApplication);
             logger.progressMessage("Deploy Environment: " + deployEnvironment);
             logger.progressMessage("Deploy Process: " + deployProcess);
+            if (deployProperties == null) {
+                logger.progressMessage("Deploy Properties: none defined");
+            } else {
+                // iterate over properties
+                BufferedReader bufReader = new BufferedReader(new StringReader(deployProperties));
+                String line = null, propName = null, propVal = null;
+                while ((line = bufReader.readLine()) != null) {
+                    String[] parts = line.split("=");
+                    logger.progressMessage("Deploy Property: " + parts[0] + " = " + parts[1]);
+                    jsonProperties += ("\"" + parts[0] + "\": \"" + parts[1] + "\",");
+                }
+                // remove last comma if it exists
+                if (jsonProperties.endsWith(",")) jsonProperties = jsonProperties.substring(0, jsonProperties.length() - 1);
+            }
+        }
+        jsonProperties += "}";
+
+        // log status settings
+        logger.progressMessage("Add Status to Version: " + (addStatusToVersion ? "is true" : "is false"));
+        if (addStatusToVersion) {
+            logger.progressMessage("Status Name: " + statusName);
         }
 
         SRAHelper sraHelper = new SRAHelper(sraUrl, username, password);
@@ -138,16 +188,18 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         uriBuilder.queryParam("name", versionName);
         URI uri = uriBuilder.build();
 
-        logger.progressMessage("Creating new version \"" + versionName +
+        logger.targetStarted("Uploading Version");
+        logger.progressMessage("Creating version \"" + versionName +
                 "\" on component " + componentName + "...");
         logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
-        sraHelper.executeJSONPost(uri);
-        logger.progressMessage("Successfully created new component version.");
+        String verJson = sraHelper.executeJSONPost(uri);
+        JSONObject verObj = new JSONObject(verJson);
+        String verId = verObj.getString("id");
+        logger.progressMessage("Unique version id is " + verId);
 
         //
         // Upload Files
         //
-        logger.progressMessage("Uploading files into version.");
         Client client = null;
         String stageId = null;
         try {
@@ -156,7 +208,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
                             FileListerBuilder.Directories.INCLUDE_ALL, FileListerBuilder.Permissions.BEST_EFFORT,
                             FileListerBuilder.Symlinks.AS_LINK, "SHA-256");
 
-            logger.progressMessage("Invoke vfs client...");
+            //logger.progressMessage("Invoke vfs client...");
             client = new Client(sraUrl + "/vfs", null, null);
             stageId = client.createStagingDirectory();
             logger.progressMessage("Created staging directory: " + stageId);
@@ -192,7 +244,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         finally {
             if (client != null && stageId != null) {
                 try {
-                    client.deleteStagingDirectory(stageId);
+                    //client.deleteStagingDirectory(stageId);
                     logger.progressMessage("Deleted staging directory: " + stageId);
                 }
                 catch (Exception e) {
@@ -202,13 +254,37 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
 
         }
 
+        logger.targetFinished("Uploading Version");
+
+        //
+        // Add status to version
+        //
+        if (addStatusToVersion) {
+            logger.targetStarted("Adding Status to Version");
+            uriBuilder = UriBuilder.fromPath(sraUrl).path("rest").path("deploy").path("version")
+                    .path(verId).path("status").path(statusName);
+            uri = uriBuilder.build();
+            String verStatusBody = "{\"status\":\"" + statusName + "\"}";
+
+            logger.progressMessage("Applying status \"" + statusName +
+                    "\" to Version " + versionName);
+            logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
+            sraHelper.executeJSONPut(uri, verStatusBody);
+            logger.targetFinished("Adding Status to Version");
+        }
+
         //
         // Deploy uploaded version
         //
         if (deployAfterUpload) {
+            logger.targetStarted("Deploying Version");
             logger.progressMessage("Starting deployment of " + deployApplication + " to " + deployEnvironment);
-            sraHelper.createProcessRequest(componentName, versionName,
+            String deployJson = sraHelper.createProcessRequest(componentName, versionName, jsonProperties,
                     deployApplication, deployEnvironment, deployProcess);
+            JSONObject deployObj = new JSONObject(deployJson);
+            String requestId = deployObj.getString("requestId");
+            logger.progressMessage("Deployment request URI is: " + sraUrl + "/#applicationProcessRequest/" + requestId);
+            logger.targetFinished("Deploying Version");
         }
 
         return BuildFinishedStatus.FINISHED_SUCCESS;

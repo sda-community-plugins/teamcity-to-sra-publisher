@@ -5,7 +5,7 @@
     <display-name>Serena Deploy</display-name>
     <version>@Version@</version>
     <description>
-        This plugin integrates TeamCity functionality with the Release Automation product line provided by Serena Software.
+        This plugin integrates TeamCity with Serena Deployment Automation.
     </description>
     <download-url>www.serena.com</download-url>
     <email>klee@serena.com</email>

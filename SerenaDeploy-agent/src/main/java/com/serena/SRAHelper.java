@@ -79,18 +79,21 @@ public class SRAHelper
         return result;
     }
 
-    public void createProcessRequest(String componentName, String versionName,
+    public String createProcessRequest(String componentName, String versionName, String jsonProperties,
                                      String appName, String envName, String procName)
             throws Exception {
         URI uri = UriBuilder.fromPath(getSraUrl()).path("cli").path("applicationProcessRequest")
                 .path("request").build();
-        String json =
+        String jsonIn =
                 "{\"application\":\"" + appName +
                         "\",\"applicationProcess\":\"" + procName +
                         "\",\"environment\":\"" + envName +
-                        "\",\"versions\":[{\"version\":\"" + versionName +
+                        "\",\"properties\":" + jsonProperties +
+                        ",\"versions\":[{\"version\":\"" + versionName +
                         "\",\"component\":\"" + componentName + "\"}]}";
-        executeJSONPut(uri,json);
+
+        String jsonOut = executeJSONPut(uri,jsonIn);
+        return jsonOut; // return string so we can log it
     }
 
     public void verifyConnection() throws Exception {
@@ -140,10 +143,10 @@ public class SRAHelper
             int responseCode = httpClient.executeMethod(method);
             //if (responseCode < 200 || responseCode < 300) {
             if (responseCode == 401) {
-                throw new Exception("Error connecting to Serena RA: Invalid user and/or password");
+                throw new Exception("Error connecting to Serena DA: Invalid user and/or password");
             }
             else if (responseCode != 200) {
-                throw new Exception("Error connecting to Serena RA: " + responseCode);
+                throw new Exception("Error connecting to Serena DA: " + responseCode);
             }
             else {
                 result = method.getResponseBodyAsString();
@@ -179,14 +182,14 @@ public class SRAHelper
             int responseCode = httpClient.executeMethod(method);
 
             if (responseCode != 200 ) {
-                throw new Exception("Serena RA returned error code: " + responseCode);
+                throw new Exception("Serena DA returned error code: " + responseCode);
             }
             else {
                 result = method.getResponseBodyAsString();
             }
         }
         catch (Exception e) {
-            throw new Exception("Error connecting to Serena RA: " + e.getMessage());
+            throw new Exception("Error connecting to Serena DA: " + e.getMessage());
         }
         finally {
             method.releaseConnection();
@@ -220,15 +223,15 @@ public class SRAHelper
             int responseCode = httpClient.executeMethod(method);
 
             //if (responseCode < 200 || responseCode < 300) {
-            if (responseCode != 200 ) {
-                throw new Exception("SerenaRA returned error code: " + responseCode);
+            if (responseCode != 200 && responseCode != 204) {
+                throw new Exception("Serena DA returned error code: " + responseCode);
             }
             else {
                 result = method.getResponseBodyAsString();
             }
         }
         catch (Exception e) {
-            throw new Exception("Error connecting to SerenaRA: " + e.getMessage());
+            throw new Exception("Error connecting to Serena DA: " + e.getMessage());
         }
         finally {
             method.releaseConnection();
