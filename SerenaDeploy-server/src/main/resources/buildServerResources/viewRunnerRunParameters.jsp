@@ -15,28 +15,40 @@
 </div>
 
 <div class="parameter">
-    Component: <strong><props:displayValue name="componentName" /></strong>
+    Publish Version if: <strong><props:displayValue name="publishVersionIf" /></strong>
 </div>
 
-<div class="parameter">
-    Base Artifact Directory: <strong><props:displayValue name="baseDir" /></strong>
-</div>
+<c:choose>
+    <c:when test="${not empty propertiesBean.properties['publishVersion']}">
+        <div class="parameter">
+            Component: <strong><props:displayValue name="componentName" /></strong>
+        </div>
 
-<div class="parameter">
-    Directory Offset: <strong><props:displayValue name="dirOffset" /></strong>
-</div>
+        <div class="parameter">
+            Base Artifact Directory: <strong><props:displayValue name="baseDir" /></strong>
+        </div>
 
-<div class="parameter">
-    Version Name: <strong><props:displayValue name="versionName" /></strong>
-</div>
+        <div class="parameter">
+            Directory Offset: <strong><props:displayValue name="dirOffset" /></strong>
+        </div>
 
-<div class="parameter">
-    Includes: <strong><props:displayValue name="includePatterns" /></strong>
-</div>
+        <div class="parameter">
+            Version Name: <strong><props:displayValue name="versionName" /></strong>
+        </div>
 
-<div class="parameter">
-    Excludes: <strong><props:displayValue name="excludePatterns" /></strong>
-</div>
+        <div class="parameter">
+            Includes: <strong><props:displayValue name="includePatterns" /></strong>
+        </div>
+
+        <div class="parameter">
+            Excludes: <strong><props:displayValue name="excludePatterns" /></strong>
+        </div>
+
+        <div class="parameter">
+            Version Properties: <strong><props:displayValue name="versionProperties" /></strong>
+        </div>
+    </c:when>
+</c:choose>
 
 <c:choose>
     <c:when test="${not empty propertiesBean.properties['addStatus']}">

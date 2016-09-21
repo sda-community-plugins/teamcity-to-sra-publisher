@@ -4,28 +4,31 @@
   <parent>
     <artifactId>SerenaDeploy</artifactId>
     <groupId>com.serena</groupId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
   </parent>
   <artifactId>build</artifactId>
   <packaging>pom</packaging>
   <properties>
       <maven.build.timestamp.format>yyyyddMMHHmmss</maven.build.timestamp.format>
+      <teamcity.SerenaDeploy.plugin.version>${project.parent.version}</teamcity.SerenaDeploy.plugin.version>
+      <teamcity.SerenaDeploy.plugin.vendorName>Micro Focus | Serena</teamcity.SerenaDeploy.plugin.vendorName>
+      <teamcity.SerenaDeploy.plugin.vendorUrl>http://www.microfocus.com</teamcity.SerenaDeploy.plugin.vendorUrl>
   </properties>
   <dependencies>
       <dependency>
            <groupId>com.serena</groupId>
            <artifactId>SerenaDeploy-agent</artifactId>
-           <version>1.0.1</version>
+           <version>${project.parent.version}</version>
       </dependency>
       <dependency>
            <groupId>com.serena</groupId>
            <artifactId>SerenaDeploy-common</artifactId>
-           <version>1.0.1</version>
+           <version>${project.parent.version}</version>
       </dependency>
       <dependency>
            <groupId>com.serena</groupId>
            <artifactId>SerenaDeploy-server</artifactId>
-           <version>1.0.1</version>
+           <version>${project.parent.version}</version>
       </dependency>
   </dependencies>
   <build>
@@ -48,9 +51,17 @@
                 <replacements>
                     <replacement>
                         <token>@Version@</token>
-                        <value>snapshot-${maven.build.timestamp}</value>
+                        <value>${teamcity.SerenaDeploy.plugin.version}</value>
                     </replacement>
-                </replacements>                        
+                    <replacement>
+                        <token>@VendorName@</token>
+                        <value>${teamcity.SerenaDeploy.plugin.vendorName}</value>
+                    </replacement>
+                    <replacement>
+                        <token>@VendorURL@</token>
+                        <value>${teamcity.SerenaDeploy.plugin.vendorUrl}</value>
+                    </replacement>
+                </replacements>
             </configuration>
         </plugin>
         <plugin>
@@ -78,7 +89,7 @@
                   <goal>single</goal>
                 </goals>
                 <configuration>
-                  <finalName>SerenaDeploy</finalName>
+                  <finalName>SerenaDeploy-${project.parent.version}</finalName>
                   <outputDirectory>${project.parent.build.directory}</outputDirectory>
                   <appendAssemblyId>false</appendAssemblyId>
                   <descriptors>

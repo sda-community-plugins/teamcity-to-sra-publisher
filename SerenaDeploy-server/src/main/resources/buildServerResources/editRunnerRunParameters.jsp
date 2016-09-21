@@ -53,6 +53,29 @@
     </tr>
 
     <tr>
+        <tr>
+            <th>
+                <label for="publishVersion">Publish Version:</label>
+            </th>
+            <td>
+                <props:checkboxProperty name="publishVersion"/>
+                <span class="error" id="error_publishVersion"></span>
+                <span class="smallNote">Check here if you want to upload the outputs of this build into Serena DA.</span>
+            </td>
+        </tr>
+    </tr>
+    <tr>
+        <th>
+            <label for="publishVersionIf">Publish Version if:</label>
+        </th>
+        <td>
+            <props:textProperty name="publishVersionIf" className="longField"/>
+            <span class="error" id="error_publishVersionIf"></span>
+            <span class="smallNote">Use a property to determine if the outputs of the build should be uploaded to Serena DA. If set this overrides the "Publish Version" checkbox.</span>
+        </td>
+    </tr>
+
+    <tr>
         <th>
             <label for="componentName">Component: </label>
             <span class="mandatoryAsterix" title="Mandatory field">*</span>
@@ -112,6 +135,17 @@
             <props:textProperty name="excludePatterns" className="longField"/>
             <span class="error" id="error_excludePatterns"></span>
             <span class="smallNote">A comma separated list of file filters to exclude from publishing. Leave blank to include everything.</span>
+        </td>
+    </tr>
+    <tr class="advancedSetting">
+        <th>
+            <label for="versionProperties">Version Properties: </label>
+        </th>
+        <td>
+            <props:multilineProperty name="versionProperties" linkTitle="Enter properties below:"
+                                     cols="60" rows="5" expanded="${true}"/>
+            <span class="error" id="error_versionProperties"></span>
+            <span class="smallNote">Newline separated list of quoted properties and values i.e. prop1=%teamcity.project.id% to create on the version.</span>
         </td>
     </tr>
 

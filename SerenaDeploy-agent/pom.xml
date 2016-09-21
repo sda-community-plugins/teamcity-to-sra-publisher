@@ -1,83 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>SerenaDeploy</artifactId>
-    <groupId>com.serena</groupId>
-    <version>1.0.1</version>
-  </parent>
-  <artifactId>SerenaDeploy-agent</artifactId>
-  <packaging>jar</packaging>
-  <dependencies>
-    
-    <dependency>
-      <groupId>com.serena</groupId>
-      <artifactId>SerenaDeploy-common</artifactId>
-      <version>1.0.1</version>
-      <scope>compile</scope>
-    </dependency>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>SerenaDeploy</artifactId>
+        <groupId>com.serena</groupId>
+        <version>1.1.0</version>
+    </parent>
+    <artifactId>SerenaDeploy-agent</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
 
-    <dependency>
-      <groupId>org.jetbrains.teamcity</groupId>
-      <artifactId>agent-api</artifactId>
-      <version>${teamcity-version}</version>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>com.serena</groupId>
+            <artifactId>SerenaDeploy-common</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.jetbrains.teamcity</groupId>
-      <artifactId>tests-support</artifactId>
-      <version>${teamcity-version}</version>
-      <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.jetbrains.teamcity</groupId>
+            <artifactId>agent-api</artifactId>
+            <version>${teamcity-version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.codehaus.jettison</groupId>
-      <artifactId>jettison</artifactId>
-      <version>1.3</version>
-    </dependency>
+        <dependency>
+            <groupId>org.jetbrains.teamcity</groupId>
+            <artifactId>tests-support</artifactId>
+            <version>${teamcity-version}</version>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>1.17.1</version>
-    </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.serena</groupId>
+            <artifactId>commons-fileutils</artifactId>
+            <version>CURRENT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.serena</groupId>
+            <artifactId>commons-xml</artifactId>
+            <version>CURRENT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.serena</groupId>
+            <artifactId>commons-util</artifactId>
+            <version>CURRENT</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.serena</groupId>
+            <artifactId>vfs</artifactId>
+            <version>CURRENT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-bundle</artifactId>
-      <version>1.17.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.urbancode.vfs</groupId>
-      <artifactId>serenara-client</artifactId>
-      <version>CURRENT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.urbancode.vfs</groupId>
-      <artifactId>serenara-vfs</artifactId>
-      <version>CURRENT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.urbancode.vfs</groupId>
-      <artifactId>commons-fileutils</artifactId>
-      <version>CURRENT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.urbancode.vfs</groupId>
-      <artifactId>commons-util</artifactId>
-      <version>CURRENT</version>
-    </dependency>
-
-  </dependencies>
+    </dependencies>
 </project>

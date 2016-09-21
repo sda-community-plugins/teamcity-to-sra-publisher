@@ -15,6 +15,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import javax.ws.rs.core.UriBuilder;
+import java.lang.reflect.Array;
 import java.net.URI;
 
 public class SRAHelper
@@ -55,9 +56,22 @@ public class SRAHelper
         this.password = password;
     }
 
+    public String getComponentId(String componentName)
+            throws Exception {
+        String result = null;
+        URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").queryParam("name", componentName)
+                .build();
+        String componentContent = executeJSONGet(uri);
+        JSONArray components = new JSONArray(componentContent);
+        JSONObject component = components.getJSONObject(0);
+        result = component.getString("id");
+        return result;
+    }
+
     public String getComponentRepositoryId(String componentName)
             throws Exception {
         String result = null;
+
         URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").path(componentName)
                 .build();
 
@@ -75,6 +89,23 @@ public class SRAHelper
                     break;
                 }
             }
+        }
+
+        return result;
+    }
+
+    public String getComponentVersionPropsheetId(String verId)
+        throws Exception {
+        URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("version")
+                .path(verId).build();
+        String result = null;
+
+        String versionContent = executeJSONGet(uri);
+
+        JSONArray propSheets = new JSONObject(versionContent).getJSONArray("propSheets");
+        if (propSheets != null) {
+            JSONObject propertyJson = propSheets.getJSONObject(0);
+            result = propertyJson.getString("id").trim();
         }
         return result;
     }

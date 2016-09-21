@@ -56,20 +56,21 @@ public class SerenaDeployRunType extends RunType
                 ArrayList<InvalidProperty> toReturn = new ArrayList<InvalidProperty>();
                 if (!properties.containsKey("sraUrl") || StringUtil.isEmpty(properties.get("sraUrl")))
                     toReturn.add(new InvalidProperty("sraUrl", "Please enter the Serena DA URL"));
-
                 if (!properties.containsKey("username") || StringUtil.isEmpty(properties.get("username")))
                     toReturn.add(new InvalidProperty("username", "Please enter a username for connecting to Serena DA"));
 
-                if (!properties.containsKey("componentName") || StringUtil.isEmpty(properties.get("componentName")))
-                    toReturn.add(new InvalidProperty("componentName", "Please enter a component name"));
+                if (!StringUtil.isEmpty(properties.get("publishVersion"))) {
+                    if (!properties.containsKey("componentName") || StringUtil.isEmpty(properties.get("componentName")))
+                        toReturn.add(new InvalidProperty("componentName", "Please enter a component name"));
 
-                if (!properties.containsKey("versionName") || StringUtil.isEmpty(properties.get("versionName")))
-                    toReturn.add(new InvalidProperty("versionName", "Please enter a version name"));
+                    if (!properties.containsKey("versionName") || StringUtil.isEmpty(properties.get("versionName")))
+                        toReturn.add(new InvalidProperty("versionName", "Please enter a version name"));
 
-                if (StringUtil.isEmpty(properties.get("baseDir")))
-                    properties.put("baseDir", "%teamcity.build.workingDir%");
-                if (StringUtil.isEmpty(properties.get("includePatterns")))
-                    properties.put("includePatterns", "**/*");
+                    if (StringUtil.isEmpty(properties.get("baseDir")))
+                        properties.put("baseDir", "%teamcity.build.workingDir%");
+                    if (StringUtil.isEmpty(properties.get("includePatterns")))
+                        properties.put("includePatterns", "**/*");
+                }
 
                 if (!StringUtil.isEmpty(properties.get("deployVersion"))) {
                     if (!properties.containsKey("deployApplication") || StringUtil.isEmpty(properties.get("deployApplication")))
