@@ -58,6 +58,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         Boolean deployAfterUpload = false;
         Boolean addPropertiesToVersion = false;
         Boolean addStatusToVersion = false;
+        Boolean addToExistingVersion = false;
         String sraUrl = getParameter("sraUrl");
         String username = getParameter("username");
         String password = getParameter("password");
@@ -70,6 +71,12 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         String includePatterns = getParameter("includePatterns");
         String excludePatterns = getParameter("excludePatterns");
         String versionProperties = getParameter("versionProperties");
+        // is addFilesToExistingVersion selected
+        String addFilesToExistingVersion = getParameter("addToExistingVersion");
+        if (addFilesToExistingVersion == null || addFilesToExistingVersion.equals(""))
+            addToExistingVersion = false;
+        else
+            addToExistingVersion = true;
         String deployVersion = getParameter("deployVersion");
         String deployVersionIf = getParameter("deployVersionIf");
         // is publishVersionIf override defined
@@ -120,6 +127,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         String jsonDeployProperties = "{";
 
         // log general settings
+        logger.targetStarted("Retrieving configuration");
         logger.progressMessage("Serena DA URL: " + sraUrl);
         logger.progressMessage("Username: " + username);
         logger.progressMessage("Publish Version: " + (publishVersionToSDA ? "true" : "false"));
@@ -150,6 +158,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             if (jsonVersionProperties.endsWith(",")) jsonVersionProperties = jsonVersionProperties.substring(0, jsonVersionProperties.length() - 1);
         }
         jsonVersionProperties += "}";
+        logger.progressMessage("Add Files to Existing Version: " + (addToExistingVersion ? "is true" : "is false"));
 
         // log deploy settings
         logger.progressMessage("Deploy Version: " + (deployAfterUpload ? "true" : "false"));
@@ -185,14 +194,42 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         SRAHelper sraHelper = new SRAHelper(sraUrl, username, password);
         String componentId = sraHelper.getComponentId(componentName);
         logger.progressMessage("Using component id: " + componentId);
+        logger.targetFinished("Retrieving configuration");
+
+        UriBuilder uriBuilder = null;
+        URI uri = null;
+        String versionId = null;
 
         //
         // publish version to SDA
         //
         if (publishVersionToSDA) {
+
+            logger.targetStarted("Uploading Version");
+
+            // check if version already exists
+            versionId = sraHelper.getComponentVersionId(componentId, versionName);
+            if (versionId == null) {
+                //logger.progressMessage("Component version with name \"" + versionName + "\" is free.");
+                if (addToExistingVersion) {
+                    logger.buildFailureDescription("The option \"Add Files to Existing Version\" is selected but " +
+                            "the component version \"" + versionName + "\" does not exist.");
+                    return toReturn;
+                }
+            } else {
+                //logger.progressMessage("Component version \"" + versionName + "\" already exists with id: " + versionId);
+                if (!addToExistingVersion) {
+                    logger.buildFailureDescription("Component version \"" + versionName + "\" already exists and the " +
+                        "option \"Add Files to Existing Version\" is not selected.");
+                    return toReturn;
+                }
+            }
+
             File workDir = new File(baseDir);
-            if (!workDir.exists()) throw new Exception("Base artifact directory " + workDir.toString()
-                    + " does not exist!");
+            if (!workDir.exists()) {
+                logger.buildFailureDescription("Base artifact directory " + workDir.toString()+ " does not exist!");
+                return toReturn;
+            }
             if (dirOffset != null && dirOffset.trim().length() > 0) {
                 workDir = new File(workDir, dirOffset.trim());
             }
@@ -220,21 +257,24 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             excludesArray = (String[]) excludesSet.toArray(excludesArray);
 
             // create component version
-            UriBuilder uriBuilder = UriBuilder.fromPath(sraUrl).path("cli").path("version")
-                    .path("createVersion");
+            if (addToExistingVersion) {
+                logger.progressMessage("Adding files to existing version \"" + versionName + "\"");
+            } else {
+                uriBuilder = UriBuilder.fromPath(sraUrl).path("cli").path("version")
+                        .path("createVersion");
 
-            uriBuilder.queryParam("component", componentName);
-            uriBuilder.queryParam("name", versionName);
-            URI uri = uriBuilder.build();
+                uriBuilder.queryParam("component", componentName);
+                uriBuilder.queryParam("name", versionName);
+                uri = uriBuilder.build();
 
-            logger.targetStarted("Uploading Version");
-            logger.progressMessage("Creating version \"" + versionName +
-                    "\" on component " + componentName + "...");
-            logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
-            String verJson = sraHelper.executeJSONPost(uri);
-            JSONObject verObj = new JSONObject(verJson);
-            String verId = verObj.getString("id");
-            logger.progressMessage("Unique version id is " + verId);
+                logger.progressMessage("Creating version \"" + versionName +
+                        "\" on component " + componentName + "...");
+                logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
+                String verJson = sraHelper.executeJSONPost(uri);
+                JSONObject verObj = new JSONObject(verJson);
+                versionId = verObj.getString("id");
+                logger.progressMessage("Unique version id is " + versionId);
+            }
 
             // Upload Files
             Client client = null;
@@ -276,7 +316,8 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
                     logger.progressMessage("Did not find any files to upload!");
                 }
             } catch (Throwable e) {
-                throw new Exception("Failed to upload files", e);
+                logger.buildFailureDescription("Failed to upload files");
+                return toReturn;
             } finally {
                 if (client != null && stageId != null) {
                     try {
@@ -298,12 +339,12 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
                 logger.targetStarted("Adding properties to Version");
 
                 // get property sheet id
-                String propSheetId = sraHelper.getComponentVersionPropsheetId(verId);
+                String propSheetId = sraHelper.getComponentVersionPropsheetId(versionId);
                 logger.progressMessage("Found component version property sheet id: " + propSheetId);
 
                 // put properties
                 //String compVerPropsBody = "{\"build.number\":\"" + tcBuildNumber + "\"" + ", \"build.vcs.number\":\"" + tcVcNumber + "\"}";
-                String encodedPropSheetId = "components%26" + componentId + "%26versions%26" + verId + "%26propSheetGroup%26propSheets%26"
+                String encodedPropSheetId = "components%26" + componentId + "%26versions%26" + versionId + "%26propSheetGroup%26propSheets%26"
                         + propSheetId + ".-1/allPropValues";
                 uriBuilder = UriBuilder.fromPath(sraUrl).path("property").path("propSheet").path(encodedPropSheetId);
                 uri = uriBuilder.build();
@@ -318,7 +359,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             if (addStatusToVersion) {
                 logger.targetStarted("Adding Status to Version");
                 uriBuilder = UriBuilder.fromPath(sraUrl).path("rest").path("deploy").path("version")
-                        .path(verId).path("status").path(statusName);
+                        .path(versionId).path("status").path(statusName);
                 uri = uriBuilder.build();
                 String verStatusBody = "{\"status\":\"" + statusName + "\"}";
 
@@ -344,7 +385,9 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             logger.targetFinished("Deploying Version");
         }
 
-        return BuildFinishedStatus.FINISHED_SUCCESS;
+        toReturn = BuildFinishedStatus.FINISHED_SUCCESS;
+
+        return toReturn;
     }
 
 }

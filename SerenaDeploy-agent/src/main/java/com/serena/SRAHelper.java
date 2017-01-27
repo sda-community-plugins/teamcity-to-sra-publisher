@@ -94,6 +94,25 @@ public class SRAHelper
         return result;
     }
 
+    public String getComponentVersionId(String componentId, String versionName)
+            throws Exception {
+        String result = null;
+
+        URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").path(componentId)
+                .path("versionsPaged").queryParam("inactive", "true").queryParam("searchQuery", versionName)
+                .build();
+        String versionsJson = executeJSONGet(uri);
+        JSONObject versionsObj = new JSONObject(versionsJson);
+        int totalRecords = versionsObj.getInt("totalRecords");
+        if (totalRecords > 0) {
+            JSONArray verArray = versionsObj.getJSONArray("records");
+            JSONObject verObj = verArray.getJSONObject(0);
+            result = verObj.getString("id");
+        }
+
+        return result;
+    }
+
     public String getComponentVersionPropsheetId(String verId)
         throws Exception {
         URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("version")

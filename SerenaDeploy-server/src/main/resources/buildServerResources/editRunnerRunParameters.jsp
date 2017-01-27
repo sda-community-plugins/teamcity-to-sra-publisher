@@ -148,6 +148,17 @@
             <span class="smallNote">Newline separated list of quoted properties and values i.e. prop1=%teamcity.project.id% to create on the version.</span>
         </td>
     </tr>
+    <tr class="advancedSetting">
+        <th>
+            <label for="addToExistingVersion">Add Files to Existing Version:</label>
+        </th>
+        <td>
+            <props:checkboxProperty name="addToExistingVersion"/>
+            <span class="error" id="error_addToExistingVersion"></span>
+            <span class="smallNote">Check here if you want to upload files into an existing version. Note: if you leave
+                this option unselected and the version already exists, the plugin will fail the build.</span>
+        </td>
+    </tr>
 
     <tr class="groupingTitle advancedSetting">
         <td colspan="2">Version Status Settings:</td>

@@ -47,6 +47,10 @@
         <div class="parameter">
             Version Properties: <strong><props:displayValue name="versionProperties" /></strong>
         </div>
+
+        <div class="parameter">
+            Add Files to Existing Version: <strong><props:displayValue name="addToExistingVersion" /></strong>
+        </div>
     </c:when>
 </c:choose>
 

@@ -2,17 +2,17 @@
 <teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
     <name>SerenaDeploy</name>
-    <display-name>Serena Deploy</display-name>
+    <display-name>Micro Focus Deployment Automation</display-name>
     <version>@Version@</version>
     <description>
-        This plugin integrates TeamCity with Serena Deployment Automation.
+        This plugin integrates TeamCity with Micro Focus (Serena) Deployment Automation.
     </description>
-    <download-url>www.serena.com</download-url>
+    <download-url>http://www.serenacentral.com/assets/plug-ins/sda-plugin/teamcity-plugin-to-publish-to-sda</download-url>
     <email>klee@serena.com</email>
     <vendor>
-      <name>Serena Software</name>
-      <url>www.serena.com</url>
-      <logo></logo>
+      <name>Micro Focus</name>
+      <url>www.microfocus.com</url>
+      <logo>https://www.microfocus.com/assets/images/Home/mf_logo.png</logo>
     </vendor>
   </info>
   <deployment use-separate-classloader="true" />

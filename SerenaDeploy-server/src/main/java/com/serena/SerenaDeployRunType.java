@@ -1,8 +1,8 @@
 package com.serena;
 
 import com.serena.PluginConstants;
+import com.urbancode.commons.util.StringUtil;
 import jetbrains.buildServer.serverSide.*;
-import org.hsqldb.lib.StringUtil;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
