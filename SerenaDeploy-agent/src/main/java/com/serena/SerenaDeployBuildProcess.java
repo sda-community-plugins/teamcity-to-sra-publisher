@@ -210,14 +210,14 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             // check if version already exists
             versionId = sraHelper.getComponentVersionId(componentId, versionName);
             if (versionId == null) {
-                //logger.progressMessage("Component version with name \"" + versionName + "\" is free.");
+                logger.progressMessage("Component version with name \"" + versionName + "\" is free.");
                 if (addToExistingVersion) {
                     logger.buildFailureDescription("The option \"Add Files to Existing Version\" is selected but " +
                             "the component version \"" + versionName + "\" does not exist.");
                     return toReturn;
                 }
             } else {
-                //logger.progressMessage("Component version \"" + versionName + "\" already exists with id: " + versionId);
+                logger.progressMessage("Component version \"" + versionName + "\" already exists with id: " + versionId);
                 if (!addToExistingVersion) {
                     logger.buildFailureDescription("Component version \"" + versionName + "\" already exists and the " +
                         "option \"Add Files to Existing Version\" is not selected.");
