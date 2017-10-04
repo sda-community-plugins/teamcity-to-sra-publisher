@@ -3,11 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SerenaDeploy.iml" filepath="$PROJECT_DIR$/SerenaDeploy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SerenaDeploy-agent/SerenaDeploy-agent.iml" filepath="$PROJECT_DIR$/SerenaDeploy-agent/SerenaDeploy-agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SerenaDeploy-common/SerenaDeploy-common.iml" filepath="$PROJECT_DIR$/SerenaDeploy-common/SerenaDeploy-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" filepath="$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/build/build.iml" filepath="$PROJECT_DIR$/build/build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-agent/SerenaDeploy-agent.iml" filepath="$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-agent/SerenaDeploy-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-common/SerenaDeploy-common.iml" filepath="$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-common/SerenaDeploy-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-server/SerenaDeploy-server.iml" filepath="$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/SerenaDeploy-server/SerenaDeploy-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/build/build.iml" filepath="$PROJECT_DIR$/da/extensions/publishers/teamcity-to-sra-publisher/build/build.iml" />
     </modules>
   </component>
 </project>
-
