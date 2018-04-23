@@ -199,6 +199,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         UriBuilder uriBuilder = null;
         URI uri = null;
         String versionId = null;
+        boolean existingVersion = false;
 
         //
         // publish version to SDA
@@ -212,9 +213,10 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
             if (versionId == null) {
                 logger.progressMessage("Component version with name \"" + versionName + "\" is free.");
                 if (addToExistingVersion) {
-                    logger.buildFailureDescription("The option \"Add Files to Existing Version\" is selected but " +
-                            "the component version \"" + versionName + "\" does not exist.");
-                    return toReturn;
+                    logger.progressMessage("The option \"Add Files to Existing Version\" is selected but " +
+                            "the component version \"" + versionName + "\" does not exist - a new version will be created");
+                    addToExistingVersion = false;
+                    //return toReturn;
                 }
             } else {
                 logger.progressMessage("Component version \"" + versionName + "\" already exists with id: " + versionId);

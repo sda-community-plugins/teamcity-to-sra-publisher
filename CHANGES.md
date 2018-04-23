@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+1.2.2
+-----
+ - Fixed "Add Files to Existing Version" not finding existing version
+ - If "Add Files to Existing Version" is selected and the version doesn't exist, it is now created instead of failing the build.
+ 
+1.2.1
+-----
+ - Updated check for existing files as searchQuery is limited - now retrieve all the existing component versions and iterate over them
+ 
 1.2
 ---
  - Added checkbox to allow users to publish into existing version.

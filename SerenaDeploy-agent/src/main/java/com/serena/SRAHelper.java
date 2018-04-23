@@ -94,12 +94,29 @@ public class SRAHelper
         return result;
     }
 
+    public int getNumComponentVersions(String componentId)
+            throws Exception {
+        URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").path(componentId).build();
+
+        String componentJson = executeJSONGet(uri);
+        JSONObject componentObj = new JSONObject(componentJson);
+        int totalRecords = componentObj.getInt("componentVersionCount");
+        return totalRecords;
+    }
+
     public String getComponentVersionId(String componentId, String versionName)
             throws Exception {
         String result = null;
 
+        int numVersions = getNumComponentVersions(componentId);
+
         URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").path(componentId)
-                .path("versionsPaged").queryParam("inactive", "true").build();
+                .path("versionsPaged").queryParam("inactive", "true")
+                .queryParam("orderField", "dateCreated")
+                .queryParam("pageNumber", "1")
+                .queryParam("rowsPerPage", String.valueOf(numVersions))
+                .queryParam("sortType", "desc")
+                .build();
 
         String versionsJson = executeJSONGet(uri);
         JSONObject versionsObj = new JSONObject(versionsJson);
