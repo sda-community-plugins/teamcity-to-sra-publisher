@@ -5,7 +5,7 @@
     <parent>
         <artifactId>SerenaDeploy</artifactId>
         <groupId>com.serena</groupId>
-        <version>1.2.2</version>
+        <version>1.2.4</version>
     </parent>
     <artifactId>SerenaDeploy-agent</artifactId>
     <packaging>jar</packaging>
@@ -81,6 +81,11 @@
             <groupId>com.serena</groupId>
             <artifactId>vfs</artifactId>
             <version>${sda-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
         </dependency>
 
     </dependencies>

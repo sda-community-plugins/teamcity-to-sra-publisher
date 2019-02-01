@@ -3,7 +3,7 @@
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 
 <div class="parameter">
-    Serena DA URL: <strong><props:displayValue name="sraUrl" /></strong>
+    Micro Focus DA URL: <strong><props:displayValue name="sraUrl" /></strong>
 </div>
 
 <div class="parameter">
@@ -50,6 +50,10 @@
 
         <div class="parameter">
             Add Files to Existing Version: <strong><props:displayValue name="addToExistingVersion" /></strong>
+        </div>
+
+        <div class="parameter">
+            Create Empty Version: <strong><props:displayValue name="createEmptyVersion" /></strong>
         </div>
     </c:when>
 </c:choose>

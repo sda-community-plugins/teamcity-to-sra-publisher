@@ -1,5 +1,6 @@
 package com.serena;
 
+import com.google.gson.Gson;
 import com.urbancode.commons.fileutils.filelister.FileListerBuilder;
 import com.urbancode.vfs.client.Client;
 import com.urbancode.vfs.common.ClientChangeSet;
@@ -8,6 +9,7 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +19,9 @@ import java.io.File;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
@@ -59,6 +63,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         Boolean addPropertiesToVersion = false;
         Boolean addStatusToVersion = false;
         Boolean addToExistingVersion = false;
+        Boolean emptyVersion = false;
         String sraUrl = getParameter("sraUrl");
         String username = getParameter("username");
         String password = getParameter("password");
@@ -73,6 +78,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         String versionProperties = getParameter("versionProperties");
         // is addFilesToExistingVersion selected
         String addFilesToExistingVersion = getParameter("addToExistingVersion");
+        String createEmptyVersion = getParameter("createEmptyVersion");
         if (addFilesToExistingVersion == null || addFilesToExistingVersion.equals(""))
             addToExistingVersion = false;
         else
@@ -113,6 +119,10 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
                 deployAfterUpload = true;
             }
         }
+        if (createEmptyVersion == null || createEmptyVersion.equals(""))
+            emptyVersion = false;
+        else
+            emptyVersion = true;
         String deployApplication = getParameter("deployApplication");
         String deployEnvironment = getParameter("deployEnvironment");
         String deployProcess = getParameter("deployProcess");
@@ -128,7 +138,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
 
         // log general settings
         logger.targetStarted("Retrieving configuration");
-        logger.progressMessage("Serena DA URL: " + sraUrl);
+        logger.progressMessage("Micro Focus DA URL: " + sraUrl);
         logger.progressMessage("Username: " + username);
         logger.progressMessage("Publish Version: " + (publishVersionToSDA ? "true" : "false"));
         logger.progressMessage("Publish Version if: " +
@@ -190,6 +200,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         if (addStatusToVersion) {
             logger.progressMessage("Status Name: " + statusName);
         }
+        logger.progressMessage("Create Empty Version: " + (emptyVersion ? "is true" : "is false"));
 
         SRAHelper sraHelper = new SRAHelper(sraUrl, username, password);
         String componentId = sraHelper.getComponentId(componentName);
@@ -206,7 +217,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
         //
         if (publishVersionToSDA) {
 
-            logger.targetStarted("Uploading Version");
+            logger.targetStarted("Publishing Version");
 
             // check if version already exists
             versionId = sraHelper.getComponentVersionId(componentId, versionName);
@@ -278,61 +289,75 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess
                 logger.progressMessage("Unique version id is " + versionId);
             }
 
-            // Upload Files
-            Client client = null;
-            String stageId = null;
-            String repositoryId = null;
-            try {
-                ClientPathEntry[] entries = ClientPathEntry
-                        .createPathEntriesFromFileSystem(workDir, includesArray, excludesArray,
-                                FileListerBuilder.Directories.INCLUDE_ALL, FileListerBuilder.Permissions.BEST_EFFORT,
-                                FileListerBuilder.Symlinks.AS_LINK, "SHA-256");
+            if (emptyVersion) {
+                logger.progressMessage("Creating empty version; not uploading any files...");
+            } else {
+                // Upload Files
+                Client client = null;
+                String stageId = null;
+                String repositoryId = null;
+                try {
+                    ClientPathEntry[] entries = ClientPathEntry
+                            .createPathEntriesFromFileSystem(workDir, includesArray, excludesArray,
+                                    FileListerBuilder.Directories.INCLUDE_ALL, FileListerBuilder.Permissions.BEST_EFFORT,
+                                    FileListerBuilder.Symlinks.AS_LINK, "SHA-256");
 
-                //logger.progressMessage("Invoke vfs client...");
-                client = new Client(sraUrl + "/vfs", null, null);
-                stageId = client.createStagingDirectory();
-                logger.progressMessage("Created staging directory: " + stageId);
+                    //logger.progressMessage("Invoke vfs client...");
+                    client = new Client(sraUrl + "/vfs", null, null);
+                    stageId = client.createStagingDirectory();
+                    logger.progressMessage("Created staging directory: " + stageId);
 
-                if (entries.length > 0) {
+                    if (entries.length > 0) {
 
-                    for (ClientPathEntry entry : entries) {
-                        File entryFile = new File(workDir, entry.getPath());
+                        for (ClientPathEntry entry : entries) {
+                            File entryFile = new File(workDir, entry.getPath());
+                            client.addFileToStagingDirectory(stageId, entry.getPath(), entryFile);
+                        }
+                        logger.progressMessage("Added " + entries.length + " files to staging directory...");
 
-                        client.addFileToStagingDirectory(stageId, entry.getPath(), entryFile);
+                        repositoryId = sraHelper.getComponentRepositoryId(componentName);
+                        if (addToExistingVersion) {
+                            ClientChangeSet existingChangeSet = client.getChangeSetByLabel(repositoryId, versionName);
+                            logger.progressMessage("Merging with existing change set: " + existingChangeSet.toJSON().toString());
+                            ClientPathEntry[] newEntries = sraHelper.mergePathEntriesWithCurrentChangeSet(entries, existingChangeSet);
+                            ClientChangeSet newChangeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Updated by TeamCity", newEntries);
+                            logger.progressMessage("Created new change set: " + newChangeSet.toString());
+                            String commitHashId = client.commitStagingDirectory(stageId, newChangeSet);
+                            logger.progressMessage("Committed staging directory: " + commitHashId);
+                            logger.progressMessage("Labeling change set with label: " + versionName);
+                            client.labelChangeSet(repositoryId, URLDecoder.decode(commitHashId, "UTF-8"), versionName,
+                                    username, "Associated with version " + versionName);
+                            logger.progressMessage("Done labeling change set!");
+                        } else {
+                            ClientChangeSet changeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Created by TeamCity", entries);
+                            logger.progressMessage("Created new change set: " + changeSet.toString());
+                            String commitHashId = client.commitStagingDirectory(stageId, changeSet);
+                            logger.progressMessage("Created change set: " + commitHashId);
+                            logger.progressMessage("Labeling change set with label: " + versionName);
+                            client.labelChangeSet(repositoryId, URLDecoder.decode(commitHashId, "UTF-8"), versionName,
+                                    username, "Associated with version " + versionName);
+                            logger.progressMessage("Done labeling change set!");
+                        }
+                    } else {
+                        logger.progressMessage("Did not find any files to upload!");
                     }
-                    logger.progressMessage("Added " + entries.length + " files to staging directory...");
-
-                    repositoryId = sraHelper.getComponentRepositoryId(componentName);
-                    ClientChangeSet changeSet =
-                            ClientChangeSet.newChangeSet(repositoryId, username, "Uploaded by TeamCity", entries);
-
-                    logger.progressMessage("Committing change set...");
-                    String changeSetId = client.commitStagingDirectory(stageId, changeSet);
-                    logger.progressMessage("Created change set: " + changeSetId);
-
-                    logger.progressMessage("Labeling change set with label: " + versionName);
-                    client.labelChangeSet(repositoryId, URLDecoder.decode(changeSetId, "UTF-8"), versionName,
-                            username, "Associated with version " + versionName);
-                    logger.progressMessage("Done labeling change set!");
-                } else {
-                    logger.progressMessage("Did not find any files to upload!");
-                }
-            } catch (Throwable e) {
-                logger.buildFailureDescription("Failed to upload files");
-                return toReturn;
-            } finally {
-                if (client != null && stageId != null) {
-                    try {
-                        //client.deleteStagingDirectory(stageId);
-                        logger.progressMessage("Deleted staging directory: " + stageId);
-                    } catch (Exception e) {
-                        logger.progressMessage("Failed to delete staging directory " + stageId + ": " + e.getMessage());
+                } catch (Throwable e) {
+                    logger.buildFailureDescription("Failed to upload files");
+                    return toReturn;
+                } finally {
+                    if (client != null && stageId != null) {
+                        try {
+                            //client.deleteStagingDirectory(stageId);
+                            logger.progressMessage("Deleted staging directory: " + stageId);
+                        } catch (Exception e) {
+                            logger.progressMessage("Failed to delete staging directory " + stageId + ": " + e.getMessage());
+                        }
                     }
-                }
 
+                }
             }
 
-            logger.targetFinished("Uploading Version");
+            logger.targetFinished("Publishing Version");
 
             //
             // Add properties to version

@@ -11,13 +11,13 @@
 
     <tr>
         <th>
-            <label for="sraUrl">Serena DA URL: </label>
+            <label for="sraUrl">Micro Focus DA URL: </label>
             <span class="mandatoryAsterix" title="Mandatory field">*</span>
         </th>
         <td>
             <props:textProperty name="sraUrl" className="longField" />
             <span class="error" id="error_sraUrl"></span>
-            <span class="smallNote">The URL for Serena DA, i.e. http://localhost:8080/serena_ra</span>
+            <span class="smallNote">The URL for Micro Focus DA, i.e. http://localhost:8080/da</span>
         </td>
     </tr>
     <tr>
@@ -28,7 +28,7 @@
         <td>
             <props:textProperty name="username" />
             <span class="error" id="error_username"></span>
-            <span class="smallNote">The user name used to login to the Serena DA server.</span>
+            <span class="smallNote">The user name used to login to the Micro Focus DA server.</span>
         </td>
     </tr>
     <tr>
@@ -39,7 +39,7 @@
         <td>
             <props:passwordProperty name="password" />
             <span class="error" id="error_password"></span>
-            <span class="smallNote">The password used to login to the Serena DA server.</span>
+            <span class="smallNote">The password used to login to the Micro Focus DA server.</span>
         </td>
     </tr>
 
@@ -60,7 +60,7 @@
             <td>
                 <props:checkboxProperty name="publishVersion"/>
                 <span class="error" id="error_publishVersion"></span>
-                <span class="smallNote">Check here if you want to upload the outputs of this build into Serena DA.</span>
+                <span class="smallNote">Check here if you want to upload the outputs of this build into Micro Focus DA.</span>
             </td>
         </tr>
     </tr>
@@ -71,7 +71,7 @@
         <td>
             <props:textProperty name="publishVersionIf" className="longField"/>
             <span class="error" id="error_publishVersionIf"></span>
-            <span class="smallNote">Use a property to determine if the outputs of the build should be uploaded to Serena DA. If set this overrides the "Publish Version" checkbox.</span>
+            <span class="smallNote">Use a property to determine if the outputs of the build should be uploaded to Micro Focus DA. If set this overrides the "Publish Version" checkbox.</span>
         </td>
     </tr>
 
@@ -83,7 +83,7 @@
         <td>
             <props:textProperty name="componentName" />
             <span class="error" id="error_componentName"></span>
-            <span class="smallNote">The name of the component in the Serena DA server which will receive the new version.</span>
+            <span class="smallNote">The name of the component in the Micro Focus DA server which will receive the new version.</span>
         </td>
     </tr>
     <tr>
@@ -114,7 +114,7 @@
         <td>
             <props:textProperty name="versionName" className="longField"/>
             <span class="error" id="error_versionName"></span>
-            <span class="smallNote">The name of the new version that will be created in the Serena DA server. You can reference TeamCity parameters, e.g. %build.number%</span>
+            <span class="smallNote">The name of the new version that will be created in the Micro Focus DA server. You can reference TeamCity parameters, e.g. %build.number%</span>
         </td>
     </tr>
     <tr>
@@ -159,6 +159,18 @@
                 this option unselected and the version already exists, the plugin will fail the build.</span>
         </td>
     </tr>
+    <tr class="advancedSetting">
+        <th>
+            <label for="createEmptyVersion">Create Empty Version:</label>
+        </th>
+        <td>
+            <props:checkboxProperty name="createEmptyVersion"/>
+            <span class="error" id="error_createEmptyVersion"></span>
+            <span class="smallNote">Check here if you want to create an empty version without any files being uploaded.
+                This should only be used if the component process has a plugin step to pull the version from a another tool using,
+                for example: Artifactory or Maven.</span>
+        </td>
+    </tr>
 
     <tr class="groupingTitle advancedSetting">
         <td colspan="2">Version Status Settings:</td>
@@ -171,7 +183,7 @@
         <td>
             <props:checkboxProperty name="addStatus"/>
             <span class="error" id="error_addStatus"></span>
-            <span class="smallNote">Check here if you want to add a status to the version in Serena DA once it's uploaded.</span>
+            <span class="smallNote">Check here if you want to add a status to the version in Micro Focus DA once it's uploaded.</span>
         </td>
     </tr>
 
@@ -197,7 +209,7 @@
         <td>
             <props:checkboxProperty name="deployVersion"/>
             <span class="error" id="error_deployVersion"></span>
-            <span class="smallNote">Check here if you want to trigger a deployment of this version in Serena DA once it's uploaded.</span>
+            <span class="smallNote">Check here if you want to trigger a deployment of this version in Micro Focus DA once it's uploaded.</span>
         </td>
     </tr>
 
@@ -208,7 +220,7 @@
         <td>
             <props:textProperty name="deployVersionIf" className="longField"/>
             <span class="error" id="error_deployVersionIf"></span>
-            <span class="smallNote">Use a property to determine if a deployment of this version should be triggered in Serena DA once it's uploaded. If set this overrides the "Deploy Version" checkbox.</span>
+            <span class="smallNote">Use a property to determine if a deployment of this version should be triggered in Micro Focus DA once it's uploaded. If set this overrides the "Deploy Version" checkbox.</span>
         </td>
     </tr>
     <tr>
@@ -218,7 +230,7 @@
         <td>
             <props:textProperty name="deployApplication" className="longField"/>
             <span class="error" id="error_deployApplication"></span>
-            <span class="smallNote">The name of the application in Serena DA which will be used to deploy the new version.</span>
+            <span class="smallNote">The name of the application in Micro Focus DA which will be used to deploy the new version.</span>
         </td>
     </tr>
     <tr>
@@ -228,7 +240,7 @@
         <td>
             <props:textProperty name="deployEnvironment" className="longField"/>
             <span class="error" id="error_deployEnvironment"></span>
-            <span class="smallNote">The name of the environment in Serena DA to deploy to.</span>
+            <span class="smallNote">The name of the environment in Micro Focus DA to deploy to.</span>
         </td>
     </tr>
     <tr>
@@ -238,7 +250,7 @@
         <td>
             <props:textProperty name="deployProcess" className="longField"/>
             <span class="error" id="error_deployProcess"></span>
-            <span class="smallNote">The name of the application process in Serena DA which will be used to deploy the new version.</span>
+            <span class="smallNote">The name of the application process in Micro Focus DA which will be used to deploy the new version.</span>
         </td>
     </tr>
     <tr class="advancedSetting">
@@ -249,7 +261,7 @@
             <props:multilineProperty name="deployProperties" linkTitle="Enter properties below:"
                                      cols="60" rows="5" expanded="${true}"/>
             <span class="error" id="error_deployProperties"></span>
-            <span class="smallNote">Newline separated list of quoted properties and values i.e. prop1=%teamcity.project.id% to pass to Serena DA Deployment Process.</span>
+            <span class="smallNote">Newline separated list of quoted properties and values i.e. prop1=%teamcity.project.id% to pass to Micro Focus DA Deployment Process.</span>
         </td>
     </tr>
 

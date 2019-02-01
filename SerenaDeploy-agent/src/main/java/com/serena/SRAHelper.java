@@ -1,6 +1,8 @@
 package com.serena;
 
 import com.urbancode.commons.util.https.OpenSSLProtocolSocketFactory;
+import com.urbancode.vfs.common.ClientChangeSet;
+import com.urbancode.vfs.common.ClientPathEntry;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -17,6 +19,10 @@ import org.codehaus.jettison.json.JSONObject;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SRAHelper
 {
@@ -315,6 +321,32 @@ public class SRAHelper
 
     private void setDirectSsoInteractionHeader(HttpMethodBase method) {
         method.setRequestHeader("DirectSsoInteraction", "true");
+    }
+
+    public ClientPathEntry[] mergePathEntriesWithCurrentChangeSet(ClientPathEntry[] pathEntries,
+                                                                           ClientChangeSet changeSet) {
+        ClientPathEntry[] result;
+        if (changeSet == null) {
+            result = pathEntries;
+        }
+        else {
+            List<ClientPathEntry> fullPathEntries = new ArrayList<ClientPathEntry>();
+            Set<String> updatedPaths = new HashSet<String>();
+            for (ClientPathEntry pathEntry : pathEntries) {
+                fullPathEntries.add(pathEntry);
+                updatedPaths.add(pathEntry.getPath());
+            }
+
+            for (ClientPathEntry pathEntry : changeSet.getEntries()) {
+                if (!updatedPaths.contains(pathEntry.getPath())) {
+                    fullPathEntries.add(pathEntry);
+                }
+            }
+
+            result = fullPathEntries.toArray(new ClientPathEntry[fullPathEntries.size()]);
+        }
+
+        return result;
     }
 
 }

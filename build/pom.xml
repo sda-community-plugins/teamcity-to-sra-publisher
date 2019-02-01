@@ -4,7 +4,7 @@
   <parent>
     <artifactId>SerenaDeploy</artifactId>
     <groupId>com.serena</groupId>
-    <version>1.2.2</version>
+    <version>1.2.4</version>
   </parent>
   <artifactId>build</artifactId>
   <packaging>pom</packaging>

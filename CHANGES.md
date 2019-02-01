@@ -1,6 +1,16 @@
 CHANGES
 =======
 
+1.2.4
+-----
+ - Fixed "upload to existing version" so that changesets are merged
+ 
+1.2.3
+-----
+ - Added "Create Empty Version" option to create an empty version without uploading any files.
+ - Change Serena references to Micro Focus
+ - Tested against TeamCity 2018.1.1
+ 
 1.2.2
 -----
  - Fixed "Add Files to Existing Version" not finding existing version
