@@ -8,7 +8,7 @@
         This plugin integrates TeamCity with Micro Focus (Serena) Deployment Automation.
     </description>
     <download-url>http://www.serenacentral.com/assets/plug-ins/sda-plugin/teamcity-plugin-to-publish-to-sda</download-url>
-    <email>klee@serena.com</email>
+    <email>kevin.lee@microfocus.com</email>
     <vendor>
       <name>Micro Focus</name>
       <url>www.microfocus.com</url>

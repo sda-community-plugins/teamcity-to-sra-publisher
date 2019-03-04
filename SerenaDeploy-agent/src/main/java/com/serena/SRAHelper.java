@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jetbrains.buildServer.agent.BuildProgressLogger;
+
+
 public class SRAHelper
 {
 
@@ -116,6 +119,7 @@ public class SRAHelper
 
         int numVersions = getNumComponentVersions(componentId);
 
+        System.out.println("##teamcity[message text='Found " + String.valueOf(numVersions) + " versions' status='NORMAL']");
         URI uri = UriBuilder.fromPath(getSraUrl()).path("rest").path("deploy").path("component").path(componentId)
                 .path("versionsPaged").queryParam("inactive", "true")
                 .queryParam("orderField", "dateCreated")
@@ -347,6 +351,10 @@ public class SRAHelper
         }
 
         return result;
+    }
+
+    public boolean isNotEmpty(String str) {
+        return  (str != null && str.trim().length() > 0);
     }
 
 }

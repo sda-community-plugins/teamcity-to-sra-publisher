@@ -4,11 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.serena</groupId>
     <artifactId>SerenaDeploy</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.4.1</version>
     <packaging>pom</packaging>
     <properties>
+        <!-- base supported versions for plugin -->
         <teamcity-version>10.0</teamcity-version>
-        <sda-version>CURRENT</sda-version>
+        <sda-version>6.0.0</sda-version>
     </properties>
     <repositories>
         <repository>
@@ -28,6 +29,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
@@ -36,7 +38,7 @@
                 <plugin>
                     <groupId>org.jetbrains.teamcity</groupId>
                     <artifactId>teamcity-sdk-maven-plugin</artifactId>
-                    <version>0.2</version>
+                    <version>RELEASE</version>
                     <configuration>
                         <!-- <teamcityDir>/path/to/tc/distro</teamcityDir> -->
                     </configuration>

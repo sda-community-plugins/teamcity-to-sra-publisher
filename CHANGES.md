@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.2.4.1
+-------
+ - Refactoring "upload to existing version" so that changesets are merged successfully
+ - Refactored dependencies
+ - Enhanced logging
+ 
 1.2.4
 -----
  - Fixed "upload to existing version" so that changesets are merged
