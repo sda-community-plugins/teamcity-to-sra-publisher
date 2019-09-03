@@ -34,12 +34,21 @@
     <tr>
         <th>
             <label for="password">Password: </label>
-            <span class="mandatoryAsterix" title="Mandatory field">*</span>
         </th>
         <td>
             <props:passwordProperty name="password" />
             <span class="error" id="error_password"></span>
             <span class="smallNote">The password used to login to the Micro Focus DA server.</span>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <label for="passwordParameter">Password Parameter: </label>
+        </th>
+        <td>
+            <props:textProperty name="passwordParameter" />
+            <span class="error" id="error_passwordParameter"></span>
+            <span class="smallNote">The TeamCity parameter containing the password used to login to the Micro Focus DA server.</span>
         </td>
     </tr>
 
@@ -262,6 +271,17 @@
                                      cols="60" rows="5" expanded="${true}"/>
             <span class="error" id="error_deployProperties"></span>
             <span class="smallNote">Newline separated list of quoted properties and values i.e. prop1=%teamcity.project.id% to pass to Micro Focus DA Deployment Process.</span>
+        </td>
+    </tr>
+    <tr class="advancedSetting">
+        <th>
+            <label for="logRESTCalls">Log REST calls:</label>
+        </th>
+        <td>
+            <props:checkboxProperty name="logRESTCalls"/>
+            <span class="error" id="error_logRESTCalls"></span>
+            <span class="smallNote">Check here if you want to display all the REST API calls sent to Micro Focus DA.
+            This can be used for debugging purposes.</span>
         </td>
     </tr>
 

@@ -4,6 +4,7 @@ import com.urbancode.commons.fileutils.filelister.FileListerBuilder;
 import com.urbancode.vfs.client.Client;
 import com.urbancode.vfs.common.ClientChangeSet;
 import com.urbancode.vfs.common.ClientPathEntry;
+import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -12,6 +13,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.jettison.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.UriBuilder;
 import java.io.*;
@@ -27,6 +29,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
 
     public SerenaDeployBuildProcess(@NotNull final AgentRunningBuild build, @NotNull final BuildRunnerContext context) {
         myBuild = build;
+        logger = build.getBuildLogger();
         myContext = context;
     }
 
@@ -72,9 +75,11 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
         Boolean addStatusToVersion = false;
         Boolean addToExistingVersion = false;
         Boolean emptyVersion = false;
+        Boolean logRESTCalls = false;
         String sraUrl = getParameter("sraUrl");
         String username = getParameter("username");
         String password = getParameter("password");
+        String passwordParameter = getParameter("passwordParameter");
         String publishVersion = getParameter("publishVersion");
         String publishVersionIf = getParameter("publishVersionIf");
         String componentName = getParameter("componentName");
@@ -124,18 +129,31 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
         String addStatus = getParameter("addStatus");
         addStatusToVersion = addStatus != null && !addStatus.equals("");
         String statusName = getParameter("statusName");
+        // is logRESTCalls defined
+        String restCallsString = getParameter("logRESTCalls");
+        logRESTCalls = restCallsString != null && !restCallsString.equals("");
+
         String jsonVersionProperties = "{";
         String jsonDeployProperties = "{";
 
+        //
+        // Display plugin configuration
+        //
+
         // log general settings
-        logger.targetStarted("Retrieving configuration");
+        logger.targetStarted("Retrieving Configuration");
         logger.progressMessage("Micro Focus DA Plugin version: " + pluginVersion);
         logger.progressMessage("Micro Focus DA URL: " + sraUrl);
         logger.progressMessage("Username: " + username);
-        logger.progressMessage("Publish Version: " + (publishVersionToSDA ? "true" : "false"));
+        logger.progressMessage("Password: " +
+                ((password == null || password.equals("")) ? "not set" : "******"));
+        logger.progressMessage("Password Parameter: " +
+                ((passwordParameter == null || passwordParameter.equals("")) ? "not set" : passwordParameter));
+        logger.progressMessage("Publish Version: " + (publishVersionToSDA ? "is true" : "is false"));
         logger.progressMessage("Publish Version if: " +
                 ((publishVersionIf == null || publishVersionIf.equals("")) ? "not set" : publishVersionIf));
         logger.progressMessage("Component: " + componentName);
+
         logger.progressMessage("Base Directory: " + baseDir);
         if (dirOffset != null)
             logger.progressMessage("Directory Offset: " + dirOffset);
@@ -164,7 +182,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
         logger.progressMessage("Add Files to Existing Version: " + (addToExistingVersion ? "is true" : "is false"));
 
         // log deploy settings
-        logger.progressMessage("Deploy Version: " + (deployAfterUpload ? "true" : "false"));
+        logger.progressMessage("Deploy Version: " + (deployAfterUpload ? "is true" : "is false"));
         logger.progressMessage("Deploy Version if: " +
                 ((deployVersionIf == null || deployVersionIf.equals("")) ? "not set" : deployVersionIf));
         if (deployAfterUpload) {
@@ -195,46 +213,80 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
             logger.progressMessage("Status Name: " + statusName);
         }
         logger.progressMessage("Create Empty Version: " + (emptyVersion ? "is true" : "is false"));
+        logger.progressMessage("Log REST Calls: " + (logRESTCalls ? "is true" : "is false"));
 
+        //
+        // Validate the configuration
+        //
+
+        logger.progressMessage("Validating configuration");
+        if (!(passwordParameter.equals(null) || passwordParameter.equals(""))) password = passwordParameter;
         SRAHelper sraHelper = new SRAHelper(sraUrl, username, password);
+        sraHelper.setLogRestCalls(logRESTCalls);
+        sraHelper.setBuildProgressLogger(logger);
+        try {
+            sraHelper.verifyConnection();
+        } catch (Exception ex) {
+            throw new RunBuildException("Error connecting to Micro Focus DA:", ex);
+        }
+        logger.progressMessage("Successfully connected to Micro Focus DA");
+
+        if (!sraHelper.getAllComponentNames().contains(componentName)) {
+            throw new RunBuildException("The component \"" + componentName + "\" was not found, aborting...");
+        }
         String componentId = sraHelper.getComponentId(componentName);
-        logger.progressMessage("Using component id: " + componentId);
-        logger.targetFinished("Retrieving configuration");
+        logger.progressMessage("Found component \"" + componentName + "\". Using component id: " + componentId);
+
+        if (deployAfterUpload) {
+            if (!sraHelper.getAllApplicationNames().contains(deployApplication)) {
+                throw new RunBuildException("The application \"" + deployApplication + "\" was not found, aborting...");
+            } else logger.progressMessage("Found application \"" + deployApplication);
+            if (!sraHelper.getApplicationProcessNamesOrAllApplicationProcessNames(deployApplication).contains(deployProcess)) {
+                throw new RunBuildException("The application process \"" + deployProcess + "\" was not found, aborting...");
+            } else logger.progressMessage("Found application process \"" + deployProcess);
+            if (!sraHelper.getApplicationEnvironmentNamesOrAllEnvironmentNames(deployApplication).contains(deployEnvironment)) {
+                throw new RunBuildException("The application environment \"" + deployEnvironment + "\" was not found, aborting...");
+            } else logger.progressMessage("Found application environment \"" + deployEnvironment);
+        }
+
+        if (addStatusToVersion) {
+            if (!sraHelper.getAllVersionStatusNames().contains(statusName)) {
+                throw new RunBuildException("The version status \"" + statusName + "\" was not found, aborting...");
+            } else logger.progressMessage("Found version status \"" + statusName);
+        }
+        logger.targetFinished("Retrieving Configuration");
 
         UriBuilder uriBuilder = null;
         URI uri = null;
         String versionId = null;
 
         //
-        // publish version to SDA
+        // Publish version to DA
         //
+
         if (publishVersionToSDA) {
 
             logger.targetStarted("Publishing Version");
 
             // check if version already exists
             versionId = sraHelper.getComponentVersionId(componentId, versionName);
-            if (versionId == null) {
-                logger.progressMessage("Component version with name \"" + versionName + "\" is free.");
-                if (addToExistingVersion) {
+            if (versionId == null || versionId.trim().length() == 0) { // NO
+                if (addToExistingVersion) { // if we are adding to existing version then abort
                     logger.progressMessage("The option \"Add Files to Existing Version\" is selected but " +
-                            "the component version \"" + versionName + "\" does not exist - a new version will be created");
-                    addToExistingVersion = false;
-                    //return toReturn;
-                }
-            } else {
-                logger.progressMessage("Component version \"" + versionName + "\" already exists with id: " + versionId);
-                if (!addToExistingVersion) {
-                    logger.buildFailureDescription("Component version \"" + versionName + "\" already exists and the " +
-                            "option \"Add Files to Existing Version\" is not selected.");
+                            "the component version \"" + versionName + "\" does not exist!");
                     return toReturn;
+                }
+            } else { // YES
+                logger.progressMessage("Component version \"" + versionName + "\" exists with id: " + versionId);
+                if (!addToExistingVersion) { // if we are adding to existing version then abort
+                    throw new RunBuildException("Component version \"" + versionName + "\" already exists and the " +
+                            "option \"Add Files to Existing Version\" is not selected, aborting...");
                 }
             }
 
             File workDir = new File(baseDir);
             if (!workDir.exists()) {
-                logger.buildFailureDescription("Base artifact directory " + workDir.toString() + " does not exist!");
-                return toReturn;
+                throw new RunBuildException("Base artifact directory " + workDir.toString() + " does not exist!");
             }
             if (dirOffset != null && dirOffset.trim().length() > 0) {
                 workDir = new File(workDir, dirOffset.trim());
@@ -264,6 +316,7 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
 
             // create component version
             if (addToExistingVersion) {
+                // no need to create version as it already exists
                 logger.progressMessage("Adding files to existing version \"" + versionName + "\"");
             } else {
                 try {
@@ -276,20 +329,21 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
 
                     logger.progressMessage("Creating version \"" + versionName +
                             "\" on component " + componentName + "...");
-                    logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
-                    String verJson = sraHelper.executeJSONPost(uri);
+                    //logger.progressMessage("Calling URI \"" + uri.toString() + "\"");
+                    String verJson = sraHelper.executeJSONPost(uri, null);
                     JSONObject verObj = new JSONObject(verJson);
                     versionId = verObj.getString("id");
                     logger.progressMessage("Unique version id is " + versionId);
                 } catch (Exception ex) {
-                    logger.progressMessage("Couldn't create component version - does it already exist: " + ex.getLocalizedMessage());
+                    throw new RunBuildException("Couldn't create component version - does it already exist?: " + ex);
                 }
             }
 
+            // upload Files
             if (emptyVersion) {
+                // no need to upload files as we are creating an empty version
                 logger.progressMessage("Creating empty version; not uploading any files...");
             } else {
-                // Upload Files
                 Client client = null;
                 String stageId = null;
                 String repositoryId = null;
@@ -299,9 +353,9 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
                                     FileListerBuilder.Directories.INCLUDE_ALL, FileListerBuilder.Permissions.BEST_EFFORT,
                                     FileListerBuilder.Symlinks.AS_LINK, "SHA-256");
 
-                    logger.progressMessage("Invoke vfs client...");
+                    logger.progressMessage("Invoke vfs client");
                     client = new Client(sraUrl + "/vfs", null, null);
-                    logger.progressMessage("Creating staging Directory");
+                    logger.progressMessage("Creating staging directory");
                     stageId = client.createStagingDirectory();
                     logger.progressMessage("Created staging directory: " + stageId);
 
@@ -311,42 +365,54 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
                             File entryFile = new File(workDir, entry.getPath());
                             client.addFileToStagingDirectory(stageId, entry.getPath(), entryFile);
                         }
-                        logger.progressMessage("Added " + entries.length + " files to staging directory...");
+                        logger.progressMessage("Added " + entries.length + " file(s) to staging directory");
 
                         repositoryId = sraHelper.getComponentRepositoryId(componentName);
                         String commitHashId = null;
                         if (addToExistingVersion) {
                             logger.progressMessage("Retrieving existing change set for: " + repositoryId + "-" + versionName);
-                            ClientChangeSet existingChangeSet = client.getChangeSetByLabel(repositoryId, versionName);
-                            logger.progressMessage("Merging with existing change set with " + existingChangeSet.getEntries().length + " entries");
-                            ClientPathEntry[] newEntries = sraHelper.mergePathEntriesWithCurrentChangeSet(entries, existingChangeSet);
-                            ClientChangeSet newChangeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Updated by TeamCity", newEntries);
-                            logger.progressMessage("Created new change set with " + newChangeSet.getEntries().length + " entries");
-                            commitHashId = client.commitStagingDirectory(stageId, newChangeSet);
+                            ClientChangeSet existingChangeSet = null;
+                            try {
+                                existingChangeSet = client.getChangeSetByLabel(repositoryId, versionName);
+                            } catch (Exception ex) {
+                                logger.progressMessage("Unable to find change set with label: " + versionName + " in repository"
+                                        + repositoryId + " was an empty version previously created?");
+                            }
+                            if (existingChangeSet != null) {
+                                logger.progressMessage("Merging with existing change set with " + existingChangeSet.getEntries().length + " entries");
+                                ClientPathEntry[] newEntries = sraHelper.mergePathEntriesWithCurrentChangeSet(entries, existingChangeSet);
+                                ClientChangeSet newChangeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Updated by TeamCity", newEntries);
+                                logger.progressMessage("Created new change set with " + newChangeSet.getEntries().length + " entries");
+                                commitHashId = client.commitStagingDirectory(stageId, newChangeSet);
+                            } else {
+                                logger.progressMessage("Creating new change set for repository: " + repositoryId);
+                                ClientChangeSet changeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Created by TeamCity", entries);
+                                logger.progressMessage("Change set has " + changeSet.getEntries().length + " entries");
+                                commitHashId = client.commitStagingDirectory(stageId, changeSet);
+                            }
                         } else {
-                            logger.progressMessage("Creating new change set for: " + repositoryId);
+                            logger.progressMessage("Creating new change set for repository: " + repositoryId);
                             ClientChangeSet changeSet = ClientChangeSet.newChangeSet(repositoryId, username, "Created by TeamCity", entries);
-                            logger.progressMessage("Created new change set with " + changeSet.getEntries().length + " entries");
+                            logger.progressMessage("Change set has " + changeSet.getEntries().length + " entries");
                             commitHashId = client.commitStagingDirectory(stageId, changeSet);
                         }
-                        logger.progressMessage("Committed staging directory: " + commitHashId);
+                        logger.progressMessage("Committed staging directory with hash: " + commitHashId);
                         logger.progressMessage("Labeling change set with label: " + versionName);
                         client.labelChangeSet(repositoryId, URLDecoder.decode(commitHashId, "UTF-8"), versionName,
                                 username, "Associated with version " + versionName);
-                        logger.progressMessage("Done labeling change set!");
+                        logger.progressMessage("Done labeling change set");
                     } else {
                         logger.progressMessage("Did not find any files to upload!");
                     }
-                } catch (Throwable e) {
-                    logger.buildFailureDescription("Failed to upload files: " + e.toString());
-                    return toReturn;
+                } catch (Throwable ex) {
+                    throw new RunBuildException("Failed to upload files: ", ex);
                 } finally {
                     if (client != null && stageId != null) {
                         try {
                             //client.deleteStagingDirectory(stageId);
                             logger.progressMessage("Deleted staging directory: " + stageId);
-                        } catch (Exception e) {
-                            logger.progressMessage("Failed to delete staging directory " + stageId + ": " + e.getMessage());
+                        } catch (Exception ex) {
+                            throw new RunBuildException("Failed to delete staging directory " + stageId, ex);
                         }
                     }
 
@@ -355,11 +421,10 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
 
             logger.targetFinished("Publishing Version");
 
-            //
-            // Add properties to version
-            //
+
+            // add properties to version
             if (addPropertiesToVersion) {
-                logger.targetStarted("Adding properties to Version");
+                logger.targetStarted("Adding Properties to Version");
 
                 // get property sheet id
                 String propSheetId = sraHelper.getComponentVersionPropsheetId(versionId);
@@ -371,14 +436,14 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
                         + propSheetId + ".-1/allPropValues";
                 uriBuilder = UriBuilder.fromPath(sraUrl).path("property").path("propSheet").path(encodedPropSheetId);
                 uri = uriBuilder.build();
-                logger.progressMessage("Calling URI \"" + uri.toString() + "\" with body " + jsonVersionProperties);
+                //logger.progressMessage("Calling URI \"" + uri.toString() + "\" with body: \"" + jsonVersionProperties + "\"");
                 sraHelper.executeJSONPut(uri, jsonVersionProperties);
 
-                logger.targetFinished("Adding properties to Version");
+                logger.targetFinished("Adding Properties to Version");
             }
-            //
-            // Add status to version
-            //
+
+
+            // add status to version
             if (addStatusToVersion) {
                 logger.targetStarted("Adding Status to Version");
                 uriBuilder = UriBuilder.fromPath(sraUrl).path("rest").path("deploy").path("version")
@@ -386,31 +451,32 @@ public class SerenaDeployBuildProcess extends FutureBasedBuildProcess {
                 uri = uriBuilder.build();
                 String verStatusBody = "{\"status\":\"" + statusName + "\"}";
 
-                logger.progressMessage("Applying status \"" + statusName +
+                logger.progressMessage("Applying status: \"" + statusName +
                         "\" to Version " + versionName);
-                logger.progressMessage("Calling URI \"" + uri.toString() + "\"...");
+                //logger.progressMessage("Calling URI: \"" + uri.toString() + "\"...");
                 sraHelper.executeJSONPut(uri, verStatusBody);
                 logger.targetFinished("Adding Status to Version");
             }
         }
 
+
         //
-        // Deploy uploaded version
+        // Deploy published version
         //
+
         if (deployAfterUpload) {
             logger.targetStarted("Deploying Version");
-            logger.progressMessage("Starting deployment of " + deployApplication + " to " + deployEnvironment);
+            logger.progressMessage("Starting deployment of application \"" + deployApplication + "\" to environment: \""
+                    + deployEnvironment + "\"");
             String deployJson = sraHelper.createProcessRequest(componentName, versionName, jsonDeployProperties,
                     deployApplication, deployEnvironment, deployProcess);
             JSONObject deployObj = new JSONObject(deployJson);
             String requestId = deployObj.getString("requestId");
-            logger.progressMessage("Deployment request URI is: " + sraUrl + "/app#/application-process-request/" + requestId + "/log");
+            logger.progressMessage("Deployment request URI is: \"" + sraUrl + "/app#/application-process-request/" + requestId + "/log\"");
             logger.targetFinished("Deploying Version");
         }
 
-        toReturn = BuildFinishedStatus.FINISHED_SUCCESS;
-
-        return toReturn;
+        return BuildFinishedStatus.FINISHED_SUCCESS;
     }
 
 }

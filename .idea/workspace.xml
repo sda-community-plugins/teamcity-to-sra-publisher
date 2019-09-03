@@ -1,25 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22d059c8-e8ac-486a-bf16-0dddb5621981" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/README.docx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-common/src/main/java/com/serena/PluginConstants.java" afterPath="$PROJECT_DIR$/SerenaDeploy-common/src/main/java/com/serena/PluginConstants.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/ReportFragment.jsp" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/ReportFragment.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAHelper.java" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAHelper.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" afterPath="$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildProcess.java" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildProcess.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/java/com/serena/SerenaDeployRunType.java" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/java/com/serena/SerenaDeployRunType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/editRunnerRunParameters.jsp" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/editRunnerRunParameters.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-agent/pom.xml" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-common/pom.xml" afterPath="$PROJECT_DIR$/SerenaDeploy-common/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/pom.xml" afterPath="$PROJECT_DIR$/SerenaDeploy-server/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/pom.xml" afterPath="$PROJECT_DIR$/build/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/teamcity-plugin.xml" afterPath="$PROJECT_DIR$/teamcity-plugin.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/viewRunnerRunParameters.jsp" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/viewRunnerRunParameters.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    <list default="true" id="22d059c8-e8ac-486a-bf16-0dddb5621981" name="Default" comment="Refactored dependencies and fixed merging of changesets">
+      <change afterPath="$PROJECT_DIR$/release/1.2.4.2/SerenaDeploy-1.2.4.2.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGES.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/FutureBasedBuildProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/FutureBasedBuildProcess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAVFSTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SRAVFSTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildProcess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/src/main/java/com/serena/SerenaDeployBuildRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-common/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-common/src/main/java/com/serena/PluginConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-common/src/main/java/com/serena/SerenaDeployPluginConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/java/com/serena/SerenaDeployRunType.java" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/java/com/serena/SerenaDeployRunType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/editRunnerRunParameters.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/editRunnerRunParameters.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/viewRunnerRunParameters.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-server/src/main/resources/buildServerResources/viewRunnerRunParameters.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <list id="85f9e1d4-2a12-45af-a45d-16c5c081aa2f" name="IntelliJ" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__aopalliance_aopalliance_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__cglib_cglib_nodep_2_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_beust_jcommander_1_27.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_ibm_icu_icu4j_2_6_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_bundle_1_17_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_client_1_17_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_core_1_17_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_thoughtworks_xstream_xstream_1_4_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_urbancode_vfs_commons_fileutils_CURRENT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_urbancode_vfs_commons_util_CURRENT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_urbancode_vfs_serenara_client_CURRENT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_urbancode_vfs_serenara_vfs_CURRENT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_io_commons_io_1_3_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_servlet_servlet_api_2_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_ws_rs_jsr311_api_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jaxen_jaxen_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jdom_jdom_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jmock_jmock_1_2_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_1_5_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_12.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_compress_1_4_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_ws_xmlrpc_xmlrpc_2_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_beanshell_bsh_2_0b4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_jettison_jettison_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_integration_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_library_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jdom_jdom_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_teamcity_agent_api_8_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_teamcity_common_api_8_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_teamcity_idea_annotations_95_677.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_teamcity_idea_trove4j_95_677.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_teamcity_tests_support_8_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jmock_jmock_2_5_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jmock_jmock_legacy_2_5_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_objenesis_objenesis_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_5_11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_simple_1_5_11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aop_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_asm_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aspects_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_beans_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_support_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_core_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_expression_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_instrument_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jdbc_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_test_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_tx_3_0_5_RELEASE.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_6_8.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_tukaani_xz_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_6.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__stax_stax_api_1_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xalan_xalan_2_6_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xerces_xercesImpl_2_9_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xerces_xmlParserAPIs_2_6_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xml_apis_xml_apis_1_3_02.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xmlpull_xmlpull_1_1_3_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xom_xom_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xpp3_xpp3_1_1_4c.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xpp3_xpp3_min_1_1_4c.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-agent/SerenaDeploy-agent.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-agent/SerenaDeploy-agent.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-common/SerenaDeploy-common.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-common/SerenaDeploy-common.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy-server/SerenaDeploy-server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SerenaDeploy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SerenaDeploy.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/build.iml" beforeDir="false" afterPath="$PROJECT_DIR$/build/build.iml" afterDir="false" />
     </list>
     <ignored path="SRADeploy.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -630,6 +705,30 @@
       <workItem from="1408606082563" duration="140000" />
       <workItem from="1408695986126" duration="10533000" />
       <workItem from="1409038297749" duration="10732000" />
+      <workItem from="1549636358076" duration="1577000" />
+      <workItem from="1549638040346" duration="4794000" />
+      <workItem from="1549710451961" duration="1915000" />
+      <workItem from="1549873171607" duration="14457000" />
+      <workItem from="1549963327760" duration="598000" />
+      <workItem from="1550136514350" duration="57000" />
+      <workItem from="1550483083572" duration="2669000" />
+      <workItem from="1551717961780" duration="1847000" />
+      <workItem from="1551774980451" duration="8000" />
+      <workItem from="1565773905491" duration="742000" />
+      <workItem from="1565949302535" duration="14378000" />
+      <workItem from="1566377802161" duration="64000" />
+      <workItem from="1566480182525" duration="3946000" />
+      <workItem from="1566561492774" duration="35000" />
+      <workItem from="1566561557092" duration="612000" />
+      <workItem from="1567411063944" duration="76000" />
+      <workItem from="1567411241135" duration="21658000" />
+    </task>
+    <task id="LOCAL-00001" summary="Refactored dependencies and fixed merging of changesets">
+      <created>1551723291941</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1551723291941</updated>
     </task>
     <servers />
   </component>

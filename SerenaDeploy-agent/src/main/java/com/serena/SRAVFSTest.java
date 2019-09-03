@@ -1,27 +1,20 @@
 package com.serena;
 
 import com.urbancode.commons.fileutils.filelister.FileListerBuilder;
-import com.urbancode.commons.util.IO;
-import com.urbancode.vfs.ChangeSet;
 import com.urbancode.vfs.client.Client;
-import com.urbancode.vfs.common.*;
-
-import javax.ws.rs.core.UriBuilder;
-
-import javax.ws.rs.core.UriBuilder;
-
+import com.urbancode.vfs.common.ClientChangeSet;
+import com.urbancode.vfs.common.ClientPathEntry;
 import org.codehaus.jettison.json.JSONObject;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.security.MessageDigest;
 import java.util.HashSet;
 import java.util.Set;
 
 public class SRAVFSTest {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println("VFS Testing");
         boolean addToExistingVersion = true;
         String componentName = "vfs-test";
@@ -63,7 +56,7 @@ public class SRAVFSTest {
                 System.out.println("Creating version \"" + versionName +
                         "\" on component " + componentName + "...");
                 System.out.println("Calling URI \"" + uri.toString() + "\"...");
-                String verJson = helper.executeJSONPost(uri);
+                String verJson = helper.executeJSONPost(uri, null);
                 JSONObject verObj = new JSONObject(verJson);
                 versionId = verObj.getString("id");
                 System.out.println("Unique version id is " + versionId);
@@ -71,7 +64,7 @@ public class SRAVFSTest {
                 System.out.println(ex.getLocalizedMessage());
             }
         }
-        
+
         File workDir = new File(baseDir);
         Set<String> includesSet = new HashSet<String>();
         Set<String> excludesSet = new HashSet<String>();
@@ -88,12 +81,12 @@ public class SRAVFSTest {
             }
         }
         String[] includesArray = new String[includesSet.size()];
-        includesArray = (String[]) includesSet.toArray(includesArray);
-        System.out.println("includesArray="+includesArray.toString());
+        includesArray = includesSet.toArray(includesArray);
+        System.out.println("includesArray=" + includesArray.toString());
 
         String[] excludesArray = new String[excludesSet.size()];
-        excludesArray = (String[]) excludesSet.toArray(excludesArray);
-        System.out.println("excludesArray="+excludesArray.toString());
+        excludesArray = excludesSet.toArray(excludesArray);
+        System.out.println("excludesArray=" + excludesArray.toString());
         String stageId = null;
         String repositoryId = null;
         try {
@@ -112,7 +105,7 @@ public class SRAVFSTest {
                 System.out.println("Added " + entries.length + " files to staging directory...");
 
                 repositoryId = helper.getComponentRepositoryId(componentName);
-                System.out.println("repositoryId="+repositoryId);
+                System.out.println("repositoryId=" + repositoryId);
                 if (addToExistingVersion) {
                     System.out.println("Retrieving existing change set for: " + repositoryId + "-" + versionName);
                     ClientChangeSet existingChangeSet = client.getChangeSetByLabel(repositoryId, versionName);
@@ -146,7 +139,7 @@ public class SRAVFSTest {
             if (client != null && stageId != null) {
                 try {
                     //client.deleteStagingDirectory(stageId);
-                   System.out.println("Deleted staging directory: " + stageId);
+                    System.out.println("Deleted staging directory: " + stageId);
                 } catch (Exception e) {
                     System.out.println("Failed to delete staging directory " + stageId + ": " + e.getMessage());
                 }

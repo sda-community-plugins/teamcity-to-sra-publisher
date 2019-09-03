@@ -1,6 +1,5 @@
 package com.serena;
 
-import com.serena.PluginConstants;
 import com.urbancode.commons.util.StringUtil;
 import jetbrains.buildServer.serverSide.*;
 import org.jetbrains.annotations.*;
@@ -18,19 +17,19 @@ public class SerenaDeployRunType extends RunType
     @Override
     public String getType()
     {
-        return PluginConstants.RunType;
+        return SerenaDeployPluginConstants.RUN_TYPE;
     }
 
     @Override
     public String getDisplayName()
     {
-        return PluginConstants.DisplayName;
+        return SerenaDeployPluginConstants.DISPLAY_NAME;
     }
 
     @Override
     public String getDescription()
     {
-        return PluginConstants.Description;
+        return SerenaDeployPluginConstants.DESCRIPTION;
     }
 
     @Override

@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.2.4.2
+-------
+ - Additional logging and checks to see if component version already exists in DA
+ - Added ability to use TeamCity parameter for DA password
+ - Added option to display DA REST calls in log
+ 
 1.2.4.1
 -------
  - Refactoring "upload to existing version" so that changesets are merged successfully

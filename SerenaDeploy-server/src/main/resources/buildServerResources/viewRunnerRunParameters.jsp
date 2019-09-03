@@ -15,6 +15,10 @@
 </div>
 
 <div class="parameter">
+    Password Parameter: <strong><props:displayValue name="passwordParameter" /></strong>
+</div>
+
+<div class="parameter">
     Publish Version if: <strong><props:displayValue name="publishVersionIf" /></strong>
 </div>
 
@@ -93,3 +97,7 @@
         </div>
     </c:when>
 </c:choose>
+
+<div class="parameter">
+    Log REST Calls: <strong><props:displayValue name="logRESTCalls" /></strong>
+</div>

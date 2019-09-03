@@ -7,7 +7,7 @@ successful build into Deployment Automation and then optionally deploy the uploa
 Build Instructions
 ------------------
 
-You will need Apache Maven and a Java JDK 1.6 or later to build the plugin.
+You will need Apache Maven and a Java JDK 1.7 or later to build the plugin.
 
 Then execute:
 
