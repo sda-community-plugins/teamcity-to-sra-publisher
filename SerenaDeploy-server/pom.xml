@@ -13,7 +13,7 @@
     <repositories>
         <repository>
             <id>local-repository</id>
-            <url>file://${parent.basedir}../mavenBuildConfig/repo</url>
+            <url>file://${project.basedir}../repo</url>
         </repository>
     </repositories>
 
